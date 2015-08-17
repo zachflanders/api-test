@@ -1,0 +1,21 @@
+<head> 
+<title>API Test</title>
+</head>
+
+<body>
+  {{>navbar}}
+  <div id='map' name='map' class='map' style='width:100%; height:100%;'></div>
+</body>
+
+<template name='datatest'>
+	{{#each data}}
+		Crime! 
+	{{/each}}
+
+</template>
+
+<template name='navbar'>
+  <nav class='navbar navbar-inverse navbar-fixed-top'>
+    <A class='navbar-brand' href='#'>BNIM Ecodistrict Dashboard</a>
+  </nav>
+</template>
