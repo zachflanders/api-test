@@ -1,5 +1,20 @@
 if (Meteor.isClient) {
 
+    var geoJsonToWKT = function(geoJson){
+	console.log(geoJson);
+	var latlonArray = geoJson.geometries[0].coordinates[0];
+	var wkt = "MULTIPOLYGON(((";
+	latlonArray.forEach(function(entry){
+	    console.log(entry);
+	    wkt = wkt + entry[0].toFixed(5)+"+"+ entry[1].toFixed(5)+",";
+	    
+	});
+	wkt = wkt.substring(0, wkt.length-1);
+	wkt = wkt+")))";
+	console.log(wkt);
+	return wkt;
+    };
+
     var latlon = [];
     var query = '';
     //load the geojson boundary file
@@ -8,11 +23,14 @@ if (Meteor.isClient) {
 	url: '/ecodistrict.geojson',
 	success: function(ecodistrict){
 
+	    console.log(ecodistrict);
+	    var districtWKT = geoJsonToWKT(ecodistrict);
+
 	    //find the boundary box using turf
 	    var bbox = turf.extent(ecodistrict);
 
 	    //Write the query for the API endpoint using the boundary box
-	    query = "?$where=within_box(location_1,"+bbox[3]+","+bbox[0]+","+bbox[1]+","+bbox[2]+")"; 
+	    query = "?$where=within_polygon(location_1,'"+districtWKT +"')"; 
 
 	    //Get the data from the endpoint using the query
 	    HTTP.get("https://data.kcmo.org/resource/kbzx-7ehe.json" + query, function(err, result){
