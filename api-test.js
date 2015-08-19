@@ -33,7 +33,7 @@ if (Meteor.isClient) {
 	    query = "?$where=within_polygon(location_1,'"+districtWKT +"')"; 
 
 	    //Get the data from the endpoint using the query
-	    HTTP.get("https://data.kcmo.org/resource/kbzx-7ehe.json" + query, function(err, result){
+	    HTTP.get("https://data.kcmo.org/resource/geta-wrqs.json" + query, function(err, result){
 
 		//Console log the data so we can look at it
     		console.log(result);
@@ -56,22 +56,15 @@ if (Meteor.isClient) {
 		var bounds = L.geoJson(ecodistrict).getBounds();
 		map.fitBounds(bounds);
 
-
-		//Determine whether each row of data is within the boundary and add it if it is
+		//Grab the lat lons of each entry and add it to the mal
 	   	result.data.forEach(function(entry, index){
-    		    latlon = [entry.location_1.latitude, entry.location_1.longitude]
-		    var point = L.marker(latlon).toGeoJSON();
-		    if(turf.inside(point,ecodistrict.features[0])){
-			L.geoJson(point).addTo(map).bindPopup(entry.description+', '+entry.from_date);
-		    }
-    		});
+    		    latlon = [entry.location_1.coordinates[1], entry.location_1.coordinates[0]];
+		    L.marker(latlon).addTo(map);
+		});
     		
 	    });
 	}
     });
-
-
-
 }
 
 if (Meteor.isServer) {
