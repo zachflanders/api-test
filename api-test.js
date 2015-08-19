@@ -1,36 +1,30 @@
 if (Meteor.isClient) {
 
     var geoJsonToWKT = function(geoJson){
-	console.log(geoJson);
+	console.log("geoJson: ", geoJson);
 	var latlonArray = geoJson.geometries[0].coordinates[0];
 	var wkt = "MULTIPOLYGON(((";
 	latlonArray.forEach(function(entry){
-	    console.log(entry);
 	    wkt = wkt + entry[0].toFixed(5)+"+"+ entry[1].toFixed(5)+",";
 	    
 	});
 	wkt = wkt.substring(0, wkt.length-1);
 	wkt = wkt+")))";
-	console.log(wkt);
+	console.log("Well Known Text: ", wkt);
 	return wkt;
     };
 
-    var latlon = [];
-    var query = '';
+
     //load the geojson boundary file
     $.ajax({
 	dataType: 'json',
 	url: '/ecodistrict.geojson',
 	success: function(ecodistrict){
 
-	    console.log(ecodistrict);
 	    var districtWKT = geoJsonToWKT(ecodistrict);
 
-	    //find the boundary box using turf
-	    var bbox = turf.extent(ecodistrict);
-
-	    //Write the query for the API endpoint using the boundary box
-	    query = "?$where=within_polygon(location_1,'"+districtWKT +"')"; 
+	    //Write the query for the API endpoint using within_polygon
+	    var query = "?$where=within_polygon(location_1,'"+districtWKT +"')"; 
 
 	    //Get the data from the endpoint using the query
 	    HTTP.get("https://data.kcmo.org/resource/geta-wrqs.json" + query, function(err, result){
@@ -56,9 +50,9 @@ if (Meteor.isClient) {
 		var bounds = L.geoJson(ecodistrict).getBounds();
 		map.fitBounds(bounds);
 
-		//Grab the lat lons of each entry and add it to the mal
+		//Grab the lat lons of each entry and add it to the map
 	   	result.data.forEach(function(entry, index){
-    		    latlon = [entry.location_1.coordinates[1], entry.location_1.coordinates[0]];
+    		    var latlon = [entry.location_1.coordinates[1], entry.location_1.coordinates[0]];
 		    L.marker(latlon).addTo(map);
 		});
     		
