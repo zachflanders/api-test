@@ -11,3 +11,6 @@ http
 twbs:bootstrap
 fuatsengul:leaflet
 yauh:turfjs
+fuatsengul:leaflet-markercluster
+brylie:leaflet-heat
+fortawesome:fontawesome

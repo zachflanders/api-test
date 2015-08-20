@@ -3,3 +3,7 @@ html, body{
     height: 100%;
 
 }
+
+#toolbar{
+	margin-top: 50px;
+}

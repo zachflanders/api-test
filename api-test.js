@@ -30,7 +30,7 @@ if (Meteor.isClient) {
 	    HTTP.get("https://data.kcmo.org/resource/geta-wrqs.json" + query, function(err, result){
 
 		//Console log the data so we can look at it
-    		console.log(result);
+    		console.log("GET response: ", result);
 
 		//Leaflet was getting confused about where the marker image files are located
     		L.Icon.Default.imagePath = '/packages/fuatsengul_leaflet/images';
@@ -50,12 +50,22 @@ if (Meteor.isClient) {
 		var bounds = L.geoJson(ecodistrict).getBounds();
 		map.fitBounds(bounds);
 
+		var markers = new L.MarkerClusterGroup();
+	
 		//Grab the lat lons of each entry and add it to the map
 	   	result.data.forEach(function(entry, index){
     		    var latlon = [entry.location_1.coordinates[1], entry.location_1.coordinates[0]];
-		    L.marker(latlon).addTo(map);
+		    var marker =  L.marker(latlon).bindPopup(entry.description + " " + entry.from_date);
+		    markers.addLayer(marker);
 		});
-    		
+		map.addLayer(markers);
+
+		var latlngs = [];
+		result.data.forEach(function(entry, index){
+			latlngs.push([entry.location_1.coordinates[1], entry.location_1.coordinates[0]]);
+		});
+		console.log(latlngs);
+    		var heat = L.heatLayer(latlngs, {radius: 50}).addTo(map);	
 	    });
 	}
     });
